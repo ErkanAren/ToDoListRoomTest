@@ -1,6 +1,13 @@
 package earen.com.todolistroomtest.database
 
 import android.arch.persistence.room.*
+import android.arch.lifecycle.LiveData
+import android.arch.persistence.room.Delete
+import android.arch.persistence.room.OnConflictStrategy
+import android.arch.persistence.room.Update
+import android.arch.persistence.room.Dao
+
+
 
 /*
     Create a new Interface and call it TaskDataAccessObject.
@@ -18,7 +25,7 @@ import android.arch.persistence.room.*
 interface TaskDataAccessObject {
 
     @Query("SELECT * FROM task ORDER BY priority")
-    fun loadAllTask(): List<Task>  // returns a list of task object
+    fun loadAllTask(): LiveData<List<Task>>  // returns a list of task object
 
     @Insert
     fun insertTask(task: Task)
@@ -28,5 +35,8 @@ interface TaskDataAccessObject {
 
     @Delete
     fun deleteTask(task: Task)
+
+    @Query("SELECT * FROM task WHERE id = :id")
+    fun getTaskById(id: Int): LiveData<Task>
 
 }

@@ -6,15 +6,10 @@ import android.view.View
 import earen.com.todolistroomtest.database.AppDataBase
 import earen.com.todolistroomtest.database.Task
 import kotlinx.android.synthetic.main.activity_add_task.*
-import kotlinx.android.synthetic.main.layout_row_item.*
 import java.util.*
-import android.widget.RadioGroup
+
+import android.util.Log
 import earen.com.todolistroomtest.database.AppExecutor
-import android.os.AsyncTask.execute
-
-
-
-
 
 
 class AddTaskActivity : AppCompatActivity() {
@@ -28,7 +23,27 @@ class AddTaskActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_task)
 
+        val intent = intent
         appDataBase = AppDataBase.getsInstance(this)!!
+
+        if (intent != null && intent.hasExtra("id")) {
+
+            saveButton.setText("Update")
+
+            val task = appDataBase.taskDao().getTaskById(intent.getIntExtra("id", 0))
+
+
+            Log.i("DetailActivity ", " Reading Database")
+
+            task.observe(this, android.arch.lifecycle.Observer<Task> {
+                    editTextTaskDescription.setText(it!!.description)
+                    setPriority(it.priority)
+            })
+        }
+
+        Log.i("DetailActivity ", " Reading DataBase")
+
+
         saveButton.setOnClickListener(View.OnClickListener {
                 val text = editTextTaskDescription.getText().toString().trim()
                 val priority = getPriorityFromViews()
@@ -40,11 +55,26 @@ class AddTaskActivity : AppCompatActivity() {
                 In the run method of Runnable object, we include our database code
                 */
                     //we are using app executor because we can't access to our database in the main thread
-                AppExecutor.instance.diskIO().execute(Runnable {
-                    appDataBase.taskDao().insertTask(task)
-                    finish()
-                })
+            AppExecutor.instance.diskIO().execute(Runnable {
+                if (intent != null && intent.hasExtra("id")) {
+                    task.id =(intent.getIntExtra("id", 0));
+                    appDataBase.taskDao().updateTask(task);
+                } else {
+                    appDataBase.taskDao().insertTask(task);
+                }
+                finish()
+            })
+
         })
+    }
+
+    private fun setPriority(priority: Int) {
+        when (priority){
+            1 -> radButton1.isChecked = true
+            2->radButton2.isChecked = true
+            3->radButton3.isChecked = true
+        }
+
     }
 
     /**

@@ -12,6 +12,13 @@ import android.view.ViewGroup
 import earen.com.todolistroomtest.database.AppExecutor
 import java.text.SimpleDateFormat
 import java.util.*
+import android.support.v4.content.ContextCompat.startActivity
+import android.R.id
+import android.content.Intent
+
+
+
+
 
 /*
 
@@ -38,6 +45,8 @@ class ToDoListAdapter// the adapter constructor
         val view = LayoutInflater.from(mContext)
             .inflate(R.layout.layout_row_item, parent, false)
 
+
+
         return TaskViewHolder(view)
 
     }
@@ -61,6 +70,15 @@ class ToDoListAdapter// the adapter constructor
         // Get the appropriate background color based on the priority
         val priorityColor = getPriorityColor(priority)
         priorityCircle.setColor(priorityColor)
+
+        val id = taskEntry.id // get item id
+        // set Onclick Listener
+        holder.itemView.setOnClickListener(View.OnClickListener {
+            val intent = Intent(mContext.applicationContext, AddTaskActivity::class.java)
+            intent.putExtra("id", id)
+            mContext.startActivity(intent)
+        })
+
 
     }
 

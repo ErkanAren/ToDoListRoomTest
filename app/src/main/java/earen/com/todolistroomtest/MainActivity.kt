@@ -12,6 +12,12 @@ import earen.com.todolistroomtest.database.AppExecutor
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 
+import android.arch.lifecycle.Observer
+
+import earen.com.todolistroomtest.database.MainScreenViewModel
+import android.arch.lifecycle.ViewModelProviders
+
+
 
 
 
@@ -60,25 +66,35 @@ class MainActivity : AppCompatActivity() {
                 val position = viewHolder.adapterPosition
                 // get list of Task
                 val tasks = toDoListAdapter.getTasks()
-                AppExecutor.instance.diskIO()
-                    .execute(Runnable { appDataBase!!.taskDao().deleteTask(tasks!!.get(position)) })
+                AppExecutor.instance.diskIO().execute(Runnable {
+                 appDataBase!!.taskDao().deleteTask(tasks!!.get(position)) })
                 //get all tasks and refresh recyclerView
-                getTasks()
+                //getTasks()
             }
 
         }).attachToRecyclerView(recycler_view_main)
+
+        getTasks()
     }
 
     override fun onResume() {
         super.onResume()
-        getTasks()
     }
 
-    private fun getTasks() {
+   /* private fun getTasks() {
         AppExecutor.instance.diskIO().execute(Runnable {
             val tasks = appDataBase!!.taskDao().loadAllTask()
             runOnUiThread { toDoListAdapter.setTasks(tasks) }
         })
+    }*/
+
+
+    private fun getTasks() {
+
+        val viewModel = ViewModelProviders.of(this).get(MainScreenViewModel::class.java)
+
+        viewModel.taskList.observe(this@MainActivity,
+            Observer { tasks -> toDoListAdapter.setTasks(tasks!!) })
     }
 
 
