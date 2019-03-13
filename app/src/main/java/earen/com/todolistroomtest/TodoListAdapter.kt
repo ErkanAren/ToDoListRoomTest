@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import earen.com.todolistroomtest.database.AppExecutor
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -92,6 +93,11 @@ class ToDoListAdapter// the adapter constructor
         mTaskEntries = taskEntries
         notifyDataSetChanged()
     }
+
+    fun getTasks(): List<Task>? {
+        return mTaskEntries
+    }
+
 
     // Inner class for creating ViewHolders
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

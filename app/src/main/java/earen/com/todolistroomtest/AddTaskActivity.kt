@@ -9,6 +9,10 @@ import kotlinx.android.synthetic.main.activity_add_task.*
 import kotlinx.android.synthetic.main.layout_row_item.*
 import java.util.*
 import android.widget.RadioGroup
+import earen.com.todolistroomtest.database.AppExecutor
+import android.os.AsyncTask.execute
+
+
 
 
 
@@ -30,8 +34,16 @@ class AddTaskActivity : AppCompatActivity() {
                 val priority = getPriorityFromViews()
                 val date = Date()
                 val task = Task(text, priority, date)
-                appDataBase.taskDao().insertTask(task)
-                finish()
+                /*
+                he onclickListener is where we add a new Task to the database. Firstly we create a new task object passing the user data as its parameters that is the text, priority and date.
+                Now we implement the AppExecutor class with a new Runnable object.
+                In the run method of Runnable object, we include our database code
+                */
+                    //we are using app executor because we can't access to our database in the main thread
+                AppExecutor.instance.diskIO().execute(Runnable {
+                    appDataBase.taskDao().insertTask(task)
+                    finish()
+                })
         })
     }
 
